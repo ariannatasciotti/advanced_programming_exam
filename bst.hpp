@@ -19,6 +19,12 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
     if(v.size()==1) median.push_back(v[0]);
 }
 
+template <typename T>
+class node;
+
+template<typename node_t, typename T>
+class _iterator;
+
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
 class bst{
     using pair_type = std::pair<const key_type, value_type>;
@@ -27,16 +33,14 @@ class bst{
     using const_iterator = _iterator<node_type, const typename node_type::value_type>;
     cmp_op op;
     std::unique_ptr<node_type> root;
-    public:
+
     template<typename ot>
     std::pair<iterator, bool> _insert(ot&& x){
-           std::cout<<"In _insert \n";
            if(root==nullptr){
                root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
-               //root.reset(new node_type{x,nullptr});
-               return std::make_pair(iterator{root.get()}, true); // root non è unique
+               return std::make_pair(iterator{root.get()}, true);
            }
-           node_type* temp=root.get(); // root non è unique
+           node_type* temp=root.get();
            while((op(temp->element.first,x.first) && temp->right != nullptr) || (op(x.first,temp->element.first) && temp->left != nullptr)){
                if(op(temp->element.first,x.first)) temp=temp->right.get();
                else temp=temp->left.get();
@@ -56,7 +60,7 @@ class bst{
                    }
                  }
     }
-
+    
     // FIND PUNTATORE
     node_type* _find(const key_type& x){
         node_type* temp=root.get();
@@ -75,15 +79,15 @@ class bst{
         return nullptr;
     }
 
-    //public:
+    public:
     bst(cmp_op x): op{x}{}
     bst(node_type* r): root{r}{};
-    bst()=default;
-    ~bst() noexcept = default;
+    bst() noexcept=default;
+    ~bst() noexcept=default;
 
 
     /* COPY constructor and overload of operator = for deep copy */
-    bst(const bst& b): op{b.op}, root{(b.root==nullptr)? nullptr:std::make_unique<node_type>(*b.root)} {}
+    bst(const bst& b): op{b.op}, root{(b.root==nullptr)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
     bst& operator=(const bst& b){
         this->clear();
         op=b.op;
@@ -93,28 +97,19 @@ class bst{
 
     /* MOVE constructor and overload of operator = */
 
-    bst(bst&& b): op{b.op}, root{nullptr} {//move op
-        root.swap(b.root);
+    bst(bst&& b) noexcept: op{std::move(b.op)}, root{std::move(b.root)} {//move op
+        std::cout<<"Move \n";
     }
 
-    bst& operator=(bst&& b){
-        this->clear();
-        this->swap(b.root);
-        //this->swap(b.op);
+    bst& operator=(bst&& b) noexcept{
+        root=std::move(b.root);
         op=std::move(b.op);
-        //root=std::move(b.root);
         return *this;
     }
-    /* per ora non necessaria
-    std::size_t size(){
-        size_t count=0;
-        for(const_iterator i=cbegin(); i!=cend(); ++i) ++count;
-        return count;
-    }*/
 
     // CLEAR
-
-    void clear(){
+    
+    void clear() noexcept{
         root.reset(nullptr);
     }
 
@@ -122,25 +117,28 @@ class bst{
     iterator begin() noexcept {
         if(root==nullptr) return iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get() != nullptr) temp=temp->left.get();
+        while(temp->left.get()!=nullptr) temp=temp->left.get();
         return iterator{temp};
         }
+        
     iterator end() noexcept { return iterator{nullptr}; } //CONTROLLARE NOEXCEPT
 
     const_iterator begin() const noexcept{
         if(root==nullptr) return const_iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get() != nullptr) temp=temp->left.get();
+        while(temp->left.get()!=nullptr) temp=temp->left.get();
         return const_iterator{temp};
         }
+        
     const_iterator end() const noexcept { return const_iterator{nullptr}; }
 
     const_iterator cbegin() const noexcept {
         if(root==nullptr) return const_iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get() != nullptr) temp=temp->left.get();
+        while(temp->left.get()!=nullptr) temp=temp->left.get();
         return const_iterator{temp};
         }
+        
     const_iterator cend() const noexcept { return const_iterator{nullptr}; }
 
 
@@ -148,14 +146,14 @@ class bst{
     /* INSERT LVALUE */
 
     std::pair<iterator, bool> insert(const pair_type& x){
-        std::cout<<"In lvalue insert \n";
+        std::cout<<"insert lvalue"<<std::endl;
         return _insert(x);
     }
 
     /* INSERT RVALUE*/
 
     std::pair<iterator, bool> insert(pair_type&& x){
-        std::cout<<"In rvalue insert \n";
+        std::cout<<"insert rvalue"<<std::endl;
         return _insert(std::move(x));
     }
 
@@ -165,11 +163,11 @@ class bst{
     std::pair<iterator, bool> emplace(Args&&... args ){
         return _insert<pair_type>({std::forward<Args>(args)...});
     }
-
-
+    
+    
     // ITERATOR FIND
 
-    iterator find(const key_type& x){
+    iterator find(const key_type& x) noexcept{
         node_type* temp=root.get();
         while(temp!=nullptr){
             key_type key=temp->element.first;
@@ -189,7 +187,7 @@ class bst{
 
     // CONST_ITERATOR FIND
 
-    const_iterator find(const key_type& x) const{
+    const_iterator find(const key_type& x) const noexcept{
         node_type* temp=root.get();
         while(temp!=nullptr){
             key_type key=temp->element.first;
@@ -206,28 +204,6 @@ class bst{
         return this->cend();
     }
 
-    /* SUBSCRIPTING OPERATOR LVALUE */
-
-     value_type& operator[](const key_type& x){
-         std::cout<<"lvalue subscript";
-         if(find(x)!=end()) return (*find(x)).second;
-         else {
-             _insert<pair_type>({x,value_type{}});
-             return (*find(x)).second;
-         }
-     }
-
-    /* SUBSCRIPTING OPERATOR RVALUE */
-
-    value_type& operator[](key_type&& x){
-        std::cout<<"rvalue subscript";
-        if(find(x)!=end()) return (*find(x)).second;
-        else {
-            _insert<pair_type>({x,value_type{}});
-            return (*find(x)).second;
-        }
-    }
-
     // PUT TO OPERATOR
 
     friend std::ostream& operator<<(std::ostream& os, const bst& x) {
@@ -238,6 +214,29 @@ class bst{
         return os;
     }
 
+    /* SUBSCRIPTING OPERATOR LVALUE */
+     
+     value_type& operator[](const key_type& x){
+         if(find(x)!=end()) return (*find(x)).second;
+         else {
+             _insert<pair_type>({std::move(x),value_type{}});
+             std::cout<<"key is lvalue"<<std::endl;
+             return (*find(x)).second;
+         }
+     }
+    
+    /* SUBSCRIPTING OPERATOR RVALUE */
+    
+    value_type& operator[](key_type&& x){
+        if(find(x)!=end()) return (*find(x)).second;
+        else {
+            _insert<pair_type>({x,value_type{}});
+            std::cout<<"key is rvalue"<<std::endl;
+            return (*find(x)).second;
+        }
+    }
+    
+    
     /* VECTORIZE*/
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
@@ -256,12 +255,6 @@ class bst{
         reorder(v, temp);
         this->clear();
         for(auto i : temp) this->insert(i);
-    }
-
-    void print(){
-        if(root) std::cout<<root->element.first<<std::endl;
-        if(root->right) std::cout<<root->right->element.first<<std::endl;
-        if(root->left) std::cout<<root->left->element.first<<std::endl;
     }
 
     void erase(const key_type& x){
