@@ -25,17 +25,5 @@ struct node{
 
     ~node() noexcept = default;   // add noexcept
 
-   /* void cancel(){
-        if(this->left!=nullptr) {
-            this->left->cancel();
-            this->left.release();
-        }
-        if(this->right!=nullptr) {
-            this->right->cancel();
-            this->right.release();
-        }
-        if(this->parent!=nullptr) delete this;
-    } */
-
  };
  #endif
