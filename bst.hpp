@@ -60,7 +60,7 @@ class bst{
                    }
                  }
     }
-    
+
     // FIND PUNTATORE
     node_type* _find(const key_type& x){
         node_type* temp=root.get();
@@ -108,7 +108,7 @@ class bst{
     }
 
     // CLEAR
-    
+
     void clear() noexcept{
         root.reset(nullptr);
     }
@@ -120,7 +120,7 @@ class bst{
         while(temp->left.get()!=nullptr) temp=temp->left.get();
         return iterator{temp};
         }
-        
+
     iterator end() noexcept { return iterator{nullptr}; } //CONTROLLARE NOEXCEPT
 
     const_iterator begin() const noexcept{
@@ -129,7 +129,7 @@ class bst{
         while(temp->left.get()!=nullptr) temp=temp->left.get();
         return const_iterator{temp};
         }
-        
+
     const_iterator end() const noexcept { return const_iterator{nullptr}; }
 
     const_iterator cbegin() const noexcept {
@@ -138,7 +138,7 @@ class bst{
         while(temp->left.get()!=nullptr) temp=temp->left.get();
         return const_iterator{temp};
         }
-        
+
     const_iterator cend() const noexcept { return const_iterator{nullptr}; }
 
 
@@ -163,8 +163,8 @@ class bst{
     std::pair<iterator, bool> emplace(Args&&... args ){
         return _insert<pair_type>({std::forward<Args>(args)...});
     }
-    
-    
+
+
     // ITERATOR FIND
 
     iterator find(const key_type& x) noexcept{
@@ -215,28 +215,20 @@ class bst{
     }
 
     /* SUBSCRIPTING OPERATOR LVALUE */
-     
+
      value_type& operator[](const key_type& x){
-         if(find(x)!=end()) return (*find(x)).second;
-         else {
-             _insert<pair_type>({x,value_type{}});
-             std::cout<<"key is lvalue"<<std::endl;
-             return (*find(x)).second;
-         }
+        auto p=_insert<pair_type>({x,value_type{}});
+        return (*p.first).second;
      }
-    
+
     /* SUBSCRIPTING OPERATOR RVALUE */
-    
+
     value_type& operator[](key_type&& x){
-        if(find(x)!=end()) return (*find(x)).second;
-        else {
-            _insert<pair_type>({x,value_type{}});
-            std::cout<<"key is rvalue"<<std::endl;
-            return (*find(x)).second;
-        }
+        auto p=_insert<pair_type>({std::move(x),value_type{}});
+        return (*p.first).second;
     }
-    
-    
+
+
     /* VECTORIZE*/
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {

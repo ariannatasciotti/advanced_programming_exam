@@ -41,6 +41,7 @@ int main(){
     //pippo.balance();
     std::cout<<albero;
     (*(pippo.find(3))).second=4;
+    std::cout<<pippo[30];
     //std::cout<<"\n \n";
     //std::cout<<"pippo:"<<std::endl<<pippo;
     //pippo.print();
