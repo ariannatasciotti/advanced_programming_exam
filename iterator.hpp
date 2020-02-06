@@ -15,27 +15,27 @@ class _iterator{
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::ptrdiff_t;
 
-    _iterator(node_t* n) : current{n} {}
+    _iterator(node_t* n) noexcept: current{n} {}
 
-    _iterator (const _iterator& i): current{i.current} {}
+    _iterator (const _iterator& i) noexcept: current{i.current} {}
 
-    _iterator& operator=(const _iterator& i){
+    _iterator& operator=(const _iterator& i) noexcept{
         current=i.current;
         return *this;
     }
 
-    reference operator*()const noexcept{
+    reference operator*() const noexcept{
         return current->element;
     }
+    
     _iterator& operator++() noexcept {
-
         if(current->right.get()!=nullptr){
-            node_t* temp=current->right.get(); //controllare tipo ptr
+            node_t* temp=current->right.get();
             while(temp->left.get() != nullptr) temp=temp->left.get();
             current=temp;
         }
         else{
-            node_t* temp=current; //controllare tipo ptr
+            node_t* temp=current; 
             while(temp->parent != nullptr && temp->parent->left.get() != temp) temp=temp->parent;
             current=temp->parent;
         }
@@ -43,12 +43,12 @@ class _iterator{
      }
 
 
-     friend bool operator==(const _iterator& a, const _iterator& b) {
-      return a.current == b.current;
+    bool operator==(const _iterator& a) const noexcept{
+      return a.current == current;
     }
 
-    friend bool operator!=(const _iterator& a, const _iterator& b) {
-      return !(a == b);
+    bool operator!=(const _iterator& a) const noexcept{
+      return !(a == *this);
     }
 };
 #endif
