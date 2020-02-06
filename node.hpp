@@ -12,10 +12,10 @@ struct node{
      T element;
      using value_type=T;
 
-     //node(const T& elem, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{elem}{}
-     //node(T&& elem, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{std::move(elem)}{}
-     template <typename ot>
-     node(ot&& elem, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{std::forward<ot>(elem)}{}
+     node(const T& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{elem}{}
+     node(T&& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{std::move(elem)}{}
+     //template <typename ot>
+     //node(ot&& elem, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{std::forward<ot>(elem)}{}
      node(const node& n, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{n.element} {
          if(n.right) right=std::make_unique<node>(*n.right, this);
          if(n.left) left=std::make_unique<node>(*n.left, this);
