@@ -219,7 +219,7 @@ class bst{
      value_type& operator[](const key_type& x){
          if(find(x)!=end()) return (*find(x)).second;
          else {
-             _insert<pair_type>({std::move(x),value_type{}});
+             _insert<pair_type>({x,value_type{}});
              std::cout<<"key is lvalue"<<std::endl;
              return (*find(x)).second;
          }
