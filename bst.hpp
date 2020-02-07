@@ -80,8 +80,8 @@ class bst{
     }
 
     public:
-    bst(cmp_op x): op{x}{}
-    bst(node_type* r): root{r}{};
+    explicit bst(cmp_op x): op{x}{}
+    explicit bst(node_type* r): root{r}{};
     bst() noexcept=default;
     ~bst() noexcept=default;
 
@@ -242,6 +242,7 @@ class bst{
     /* BALANCE */
 
     void balance() {
+        if (!unbalanced()) return;
         std::vector<std::pair<key_type,value_type>> v=this->vectorize();
         std::vector<std::pair<key_type,value_type>> temp;
         reorder(v, temp);
@@ -261,7 +262,7 @@ class bst{
         for(auto i=v.begin(); i!=v.end(); ++i) if(op((*i).first, x) || op(x, (*i).first)) this->insert(*i);
     }
 
-    bool unbalanced(){
+    bool unbalanced() const noexcept{
         auto a=root.get()->unbalanced();
         if(a.first){
             std::cout<<"Unbalance on node "<<a.second->element.first<<std::endl;

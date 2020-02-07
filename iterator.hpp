@@ -17,7 +17,6 @@ class _iterator{
 
     explicit _iterator(node_t* n) noexcept: current{n} {}
 
-    //explicit??
     _iterator (const _iterator& i) noexcept: current{i.current} {}
 
     _iterator& operator=(const _iterator& i) noexcept{
