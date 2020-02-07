@@ -13,11 +13,6 @@ all: $(EXE)
 
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
-format: $(SRC) $(HEADERS) main.cpp
-	@clang-format -i $^ -verbose || echo "Please install clang-format to run this command"
-
-.PHONY: format
-
 
 clean:
 		rm -f $(EXE) *~ *.x
