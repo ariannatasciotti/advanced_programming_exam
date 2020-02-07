@@ -21,18 +21,18 @@ struct node{
          if(n.left) left=std::make_unique<node>(*n.left, this);
      }
 
-    int rnum(){ //right descendants
+    int rnum() const noexcept{ //right descendants
         if(right==nullptr) return 0;
         return 1+(right->rnum()+right->lnum());
     }
-    int lnum(){ //left descendants
+    int lnum() const noexcept{ //left descendants
         if(left==nullptr) return 0;
         return 1+(left->rnum()+left->lnum());
     }
 
-    std::pair<bool,node*> unbalanced(){ //returns bool (unbalanced) and node* (pointer to unbalanced node)
-        std::pair<bool,node*> l{false,{}};
-        std::pair<bool,node*> r{false,{}};
+    std::pair<bool,const node*> unbalanced() const noexcept{ //returns bool (unbalanced) and node* (pointer to unbalanced node)
+        std::pair<bool,const node*> l{false,{}};
+        std::pair<bool,const node*> r{false,{}};
         std::cout<<"rnum "<<rnum()<<" lnum "<<lnum()<<"\n";
         if(lnum()>rnum()+1 || rnum()>lnum()+1) return {true,this};
         if(right!=nullptr) {r=this->right->unbalanced(); if(r.first) return {true, r.second};}

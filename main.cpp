@@ -41,13 +41,14 @@ int main(){
     //bst<int, int> pippo=std::move(albero);
     //std::cout<<std::endl<<pippo;
     //pippo.print();
-    albero.unbalanced();
+    //albero.unbalanced();
     //pippo.balance();
     bst<int,int> pippo=std::move(albero);
     std::cout<<albero;
     (*(pippo.find(3))).second=4;
     pippo.balance();
-    if(pippo.unbalanced()) std::cout<<pippo[30];
+    //if(pippo.unbalanced()) std::cout<<pippo[30];
+    pippo.unbalanced();
     //std::cout<<"\n \n";
     //std::cout<<"pippo:"<<std::endl<<pippo;
     //pippo.print();
