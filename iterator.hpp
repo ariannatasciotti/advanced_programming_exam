@@ -15,8 +15,9 @@ class _iterator{
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::ptrdiff_t;
 
-    _iterator(node_t* n) noexcept: current{n} {}
+    explicit _iterator(node_t* n) noexcept: current{n} {}
 
+    //explicit??
     _iterator (const _iterator& i) noexcept: current{i.current} {}
 
     _iterator& operator=(const _iterator& i) noexcept{

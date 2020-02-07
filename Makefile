@@ -1,6 +1,6 @@
 SRC = main.cpp
 HEADERS = iterator.hpp node.hpp bst.hpp
-CXX = c++
+CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++14
 
 EXE = $(SRC:.cpp=.x)
@@ -25,4 +25,3 @@ clean:
 .PHONY: clean
 
 main.x: iterator.hpp node.hpp bst.hpp
-
