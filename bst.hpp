@@ -261,5 +261,14 @@ class bst{
         for(auto i=v.begin(); i!=v.end(); ++i) if(op((*i).first, x) || op(x, (*i).first)) this->insert(*i);
     }
 
+    bool unbalanced(){
+        auto a=root.get()->unbalanced();
+        if(a.first){
+            std::cout<<"Unbalance on node "<<a.second->element.first<<std::endl;
+            return true;
+            }
+        return false;
+    }
+
 };
 #endif
