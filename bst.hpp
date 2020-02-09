@@ -87,8 +87,8 @@ class bst{
             return this->findmin(node->left.get());
         }
     }
-    
-    
+
+
     public:
     explicit bst(cmp_op x): op{x}{}
     explicit bst(node_type* r): root{r}{};
@@ -272,36 +272,42 @@ class bst{
         for(auto i=v.begin(); i!=v.end(); ++i) if(op((*i).first, x) || op(x, (*i).first)) this->insert(*i);
     }*/
 
-    
+
   void erase(const key_type& x) {
         node_type* p{_find(x)};
-        if(p == nullptr) return;
-        if(p->left == nullptr && p->right == nullptr){
-            if(p->parent->left.get()==p) p->parent->left.release();
+        if(p==nullptr) return;
+        if(p->left==nullptr && p->right==nullptr){
+            if(p==root.get()) root.release();
+            else if(p->parent->left.get()==p) p->parent->left.release();
             else p->parent->right.release();
         }
-        else if(p->left.get() != nullptr && p->right.get() == nullptr){
+
+        else if(p->left.get()!=nullptr && p->right.get()==nullptr){
             p->left->parent=p->parent;
-            if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
+            if(p==root.get()) root=std::move(p->left);
+            else if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
             else p->parent->right=std::move(p->left);
         }
-        else if(p->left.get() == nullptr && p->right.get() != nullptr){
+        else if(p->left.get()==nullptr && p->right.get()!=nullptr){
             p->right->parent=p->parent;
-            if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
+            if(p==root.get()) root=std::move(p->right);
+            else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
             else p->parent->right=std::move(p->right);
         }
+
         else{
-            node_type* min = this->findmin(p->right.get());
-            min->left=std::move(p->left);
+            node_type* min{this->findmin(p->right.get())};
             p->left->parent=min;
+            min->left=std::move(p->left);
             p->right->parent=p->parent;
-            if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
+            if(p==root.get()) root=std::move(p->right);
+            else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
             else p->parent->right=std::move(p->right);
-            
+
         }
     }
-        
-        
+
+
     bool unbalanced() const noexcept{
         auto a=root.get()->unbalanced();
         if(a.first){

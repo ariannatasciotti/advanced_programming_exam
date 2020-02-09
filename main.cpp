@@ -35,6 +35,7 @@ int main(){
     albero.insert(std::make_pair(2,10));
     albero.insert(std::make_pair(1,10));
         albero.insert(std::make_pair(19,10));
+                albero.insert(std::make_pair(21,10));
             albero.insert(std::make_pair(4,10));
     albero.insert(std::make_pair(5,10));
     std::cout<<"albero prima di erase:"<<std::endl<<albero<<std::endl;
@@ -45,9 +46,9 @@ int main(){
     //pippo.print();
     //albero.unbalanced();
     //pippo.balance();
-    albero.erase(13);
+    albero.erase(15);
     std::cout<<"albero dopo erase:"<<std::endl<<albero<<std::endl;
-    bst<int,int> pippo=std::move(albero);
+    /*bst<int,int> pippo=std::move(albero);
     std::cout<<albero;
     (*(pippo.find(3))).second=4;
     pippo.balance();
@@ -60,6 +61,6 @@ int main(){
     //std::cout<<" \n \n \n prova della erase: \n \n";
     //pippo.erase(33);
     //pippo.clear();
-    std::cout<<"pippo:"<<std::endl<<pippo;
+    std::cout<<"pippo:"<<std::endl<<pippo;*/
     return 0;
 }
