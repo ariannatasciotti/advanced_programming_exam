@@ -48,11 +48,11 @@ int main(){
     //pippo.balance();
     albero.erase(15);
     std::cout<<"albero dopo erase:"<<std::endl<<albero<<std::endl;
-    /*bst<int,int> pippo=std::move(albero);
-    std::cout<<albero;
+    bst<int,int> pippo=std::move(albero);
+    std::cout<<"pippo dopo la move:"<<pippo<<std::endl;
     (*(pippo.find(3))).second=4;
     pippo.balance();
-    if(pippo.unbalanced()) std::cout<<pippo[30];
+    if(!pippo.unbalanced()) std::cout<<pippo[30];
     //pippo.unbalanced();
     //std::cout<<"\n \n";
     //std::cout<<"pippo:"<<std::endl<<pippo;
@@ -60,7 +60,7 @@ int main(){
     //std::cout<<(*pippo.find(5)).first;
     //std::cout<<" \n \n \n prova della erase: \n \n";
     //pippo.erase(33);
-    //pippo.clear();
-    std::cout<<"pippo:"<<std::endl<<pippo;*/
+    std::cout<<"pippo dopo la balance:"<<std::endl<<pippo;
+    pippo.clear();
     return 0;
 }

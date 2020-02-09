@@ -37,7 +37,7 @@ class bst{
 
     template<typename ot>
     std::pair<iterator, bool> _insert(ot&& x){
-           if(root==nullptr){
+           if(!root){
                root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
                return std::make_pair(iterator{root.get()}, true);
            }
@@ -65,7 +65,7 @@ class bst{
     // FIND PUNTATORE
     node_type* _find(const key_type& x){
         node_type* temp=root.get();
-        while(temp!=nullptr){
+        while(temp){
             key_type key=temp->element.first;
             if(!(op(key, x) || op(x, key))){
                 return temp;
@@ -81,7 +81,7 @@ class bst{
     }
 
     node_type* findmin(node_type* node){
-        if(node->left.get() == nullptr){
+        if(!node->left.get()){
             return node;
         } else{
             return this->findmin(node->left.get());
@@ -97,11 +97,11 @@ class bst{
 
 
     /* COPY constructor and overload of operator = for deep copy */
-    bst(const bst& b): op{b.op}, root{(b.root==nullptr)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
+    bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
     bst& operator=(const bst& b){
         this->clear();
         op=b.op;
-        if(b.root!=nullptr) root=std::make_unique<node_type>(*b.root);
+        if(b.root) root=std::make_unique<node_type>(*b.root);
         return *this;
     }
 
@@ -125,27 +125,27 @@ class bst{
 
 
     iterator begin() noexcept {
-        if(root==nullptr) return iterator{nullptr};
+        if(!root) return iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get()!=nullptr) temp=temp->left.get();
+        while(temp->left.get()) temp=temp->left.get();
         return iterator{temp};
         }
 
     iterator end() noexcept { return iterator{nullptr}; } //CONTROLLARE NOEXCEPT
 
     const_iterator begin() const noexcept{
-        if(root==nullptr) return const_iterator{nullptr};
+        if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get()!=nullptr) temp=temp->left.get();
+        while(temp->left.get()) temp=temp->left.get();
         return const_iterator{temp};
         }
 
     const_iterator end() const noexcept { return const_iterator{nullptr}; }
 
     const_iterator cbegin() const noexcept {
-        if(root==nullptr) return const_iterator{nullptr};
+        if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
-        while(temp->left.get()!=nullptr) temp=temp->left.get();
+        while(temp->left.get()) temp=temp->left.get();
         return const_iterator{temp};
         }
 
@@ -179,7 +179,7 @@ class bst{
 
     iterator find(const key_type& x) noexcept{
         node_type* temp=root.get();
-        while(temp!=nullptr){
+        while(temp){
             key_type key=temp->element.first;
             if(!(op(key, x) || op(x, key))){
                 return iterator{temp};
@@ -275,20 +275,20 @@ class bst{
 
   void erase(const key_type& x) {
         node_type* p{_find(x)};
-        if(p==nullptr) return;
-        if(p->left==nullptr && p->right==nullptr){
+        if(!p) return;
+        if(!p->left && !p->right){
             if(p==root.get()) root.release();
             else if(p->parent->left.get()==p) p->parent->left.release();
             else p->parent->right.release();
         }
 
-        else if(p->left.get()!=nullptr && p->right.get()==nullptr){
+        else if(p->left.get() && !p->right.get()){
             p->left->parent=p->parent;
             if(p==root.get()) root=std::move(p->left);
             else if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
             else p->parent->right=std::move(p->left);
         }
-        else if(p->left.get()==nullptr && p->right.get()!=nullptr){
+        else if(!p->left.get() && !p->right.get()){
             p->right->parent=p->parent;
             if(p==root.get()) root=std::move(p->right);
             else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
