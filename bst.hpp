@@ -29,6 +29,7 @@ template <typename key_type, typename value_type, typename cmp_op=std::less<key_
 class bst{
     using pair_type = std::pair<const key_type, value_type>;
     using node_type = node<pair_type>;
+    using node_t = node<std::pair<key_type, value_type>>;
     using iterator = _iterator <node_type, typename node_type::value_type>;
     using const_iterator = _iterator<node_type, const typename node_type::value_type>;
     cmp_op op;
@@ -79,6 +80,15 @@ class bst{
         return nullptr;
     }
 
+    node_type* findmin(node_type* node){
+        if(node->left.get() == nullptr){
+            return node;
+        } else{
+            return this->findmin(node->left.get());
+        }
+    }
+    
+    
     public:
     explicit bst(cmp_op x): op{x}{}
     explicit bst(node_type* r): root{r}{};
@@ -250,7 +260,7 @@ class bst{
         for(auto i : temp) this->insert(i);
     }
 
-    void erase(const key_type& x){
+    /*void erase(const key_type& x){
         node_type* p{_find(x)};      // è un problema se p non è const e quindi potrebbe modificare l'albero?
         if(p==nullptr) return;
         bst<key_type, value_type, cmp_op> temp(p);
@@ -260,8 +270,38 @@ class bst{
         temp.root->parent=nullptr;
         std::vector<std::pair<key_type,value_type>> v=temp.vectorize();
         for(auto i=v.begin(); i!=v.end(); ++i) if(op((*i).first, x) || op(x, (*i).first)) this->insert(*i);
-    }
+    }*/
 
+    
+  void erase(const key_type& x) {
+        node_type* p{_find(x)};
+        if(p == nullptr) return;
+        if(p->left == nullptr && p->right == nullptr){
+            if(p->parent->left.get()==p) p->parent->left.release();
+            else p->parent->right.release();
+        }
+        else if(p->left.get() != nullptr && p->right.get() == nullptr){
+            p->left->parent=p->parent;
+            if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
+            else p->parent->right=std::move(p->left);
+        }
+        else if(p->left.get() == nullptr && p->right.get() != nullptr){
+            p->right->parent=p->parent;
+            if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
+            else p->parent->right=std::move(p->right);
+        }
+        else{
+            node_type* min = this->findmin(p->right.get());
+            min->left=std::move(p->left);
+            p->left->parent=min;
+            p->right->parent=p->parent;
+            if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
+            else p->parent->right=std::move(p->right);
+            
+        }
+    }
+        
+        
     bool unbalanced() const noexcept{
         auto a=root.get()->unbalanced();
         if(a.first){
