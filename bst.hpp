@@ -84,6 +84,9 @@ class bst{
             return this->findmin(node->left.get());
         }
     }
+    
+    // LEFT MOST
+    
     node_type* leftmost(node_type* node){
         if(!node->right) return node->parent;
         else return findmin(node->right.get());
@@ -282,17 +285,23 @@ class bst{
         node_type* p{_find(x)};
         if(!p) return;
         if(p==root.get()){
-            root.release(p->right);
-            if(p->right) root.
+            if(p->right) root.reset(p->right.get());
+            if(p->left) p->left->parent= findmin(p->right.get());
+            root.reset(p->left.get());
         }
         else if(p->parent->left.get()==p){
-            p->parent->left.reset(p->right)
+            if(p->right) p->parent->left.reset(p->right.get());
+            if(p->left) p->left->parent=findmin(p->right.get());
+            p->parent->left.reset(p->left.get());
         }
-        else
-        delete p;
+        else{
+            if(p->right) p->parent->right.reset(p->right.get());
+            if(p->left) p->left->parent=findmin(p->right.get());
+            p->parent->right.reset(p->left.get());
         }
+    }
         
-        if(!p->left && !p->right){
+       /* if(!p->left && !p->right){
             if(p==root.get()) root.release();
             else if(p->parent->left.get()==p) p->parent->left.release();
             else p->parent->right.release();
@@ -320,8 +329,7 @@ class bst{
             else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
             else p->parent->right=std::move(p->right);
 
-        }
-    }
+        }*/
 
 
     bool unbalanced() const noexcept{
