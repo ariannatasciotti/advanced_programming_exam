@@ -14,39 +14,18 @@ struct node{
 
      node(const T& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{elem}{}
      node(T&& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{std::move(elem)}{}
-     //template <typename ot>
-     //node(ot&& elem, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{std::forward<ot>(elem)}{}
      node(const node& n, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{n.element} {
          if(n.right) right=std::make_unique<node>(*n.right, this);
          if(n.left) left=std::make_unique<node>(*n.left, this);
      }
 
-    /*int rnum() const noexcept{ //right descendants
-        if(!right) return 0;
-        return 1+(right->rnum()+right->lnum());
-    }
-    int lnum() const noexcept{ //left descendants
-        if(!left) return 0;
-        return 1+(left->rnum()+left->lnum());
-    }*/
-    
     std::pair<int, int> num_nodes() const noexcept{
-        if(!right && !left ) return std::make_pair(0,0);
-        else if(!right && left) return std::make_pair(0, 1+(left->num_nodes().first+left->num_nodes().second));
-        else if(right && !left) return std::make_pair(1+(right->num_nodes().first+right->num_nodes().second),0);
-        else return std::make_pair(1+(right->num_nodes().first+right->num_nodes().second), 1+(left->num_nodes().first+left->num_nodes().second));
+        if(!right && !left ) return {0,0};
+        else if(!right && left) return {0, 1+(left->num_nodes().first+left->num_nodes().second)};
+        else if(right && !left) return {1+(right->num_nodes().first+right->num_nodes().second),0};
+        else return {1+(right->num_nodes().first+right->num_nodes().second), 1+(left->num_nodes().first+left->num_nodes().second)};
     }
 
-    /*std::pair<bool,const node*> unbalanced() const noexcept{ //returns bool (unbalanced) and node* (pointer to unbalanced node)
-        std::pair<bool,const node*> l{false,{}};
-        std::pair<bool,const node*> r{false,{}};
-        std::cout<<"rnum "<<rnum()<<" lnum "<<lnum()<<"\n";
-        if(lnum()>rnum()+1 || rnum()>lnum()+1) return {true,this};
-        if(right) {r=this->right->unbalanced(); if(r.first) return {true, r.second};}
-        if(left) {l=this->left->unbalanced(); if(l.first) return {true, l.second};}
-        return {false,{}};
-        }*/
-    
     std::pair<bool,const node*> unbalanced() const noexcept{ //returns bool (unbalanced) and node* (pointer to unbalanced node)
            std::pair<bool,const node*> l{false,{}};
            std::pair<bool,const node*> r{false,{}};

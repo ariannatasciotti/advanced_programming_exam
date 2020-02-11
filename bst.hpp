@@ -221,6 +221,8 @@ class bst{
     /* SUBSCRIPTING OPERATOR LVALUE */
 
      value_type& operator[](const key_type& x){
+        auto f=find(x);
+        if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({x,value_type{}});
         return (*p.first).second;
      }
@@ -228,6 +230,8 @@ class bst{
     /* SUBSCRIPTING OPERATOR RVALUE */
 
     value_type& operator[](key_type&& x){
+        auto f=find(std::move(x));
+        if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({std::move(x),value_type{}});
         return (*p.first).second;
     }
@@ -237,8 +241,9 @@ class bst{
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
         std::vector<std::pair<key_type,value_type>> v;
+
         for(const_iterator i=this->begin(); i!=this->end(); ++i) {
-            v.push_back(*i);
+            v.emplace_back(*i);
         }
         return v;
     }
@@ -254,20 +259,7 @@ class bst{
         for(auto i : temp) this->insert(i);
     }
 
-    /*void erase(const key_type& x){
-        node_type* p{_find(x)};      // è un problema se p non è const e quindi potrebbe modificare l'albero?
-        if(p==nullptr) return;
-        bst<key_type, value_type, cmp_op> temp(p);
-        if(temp.root.get()==root.get()) root.release();
-        else if(temp.root.get()->parent->left.get()==temp.root.get()) temp.root.get()->parent->left.release();
-        else temp.root.get()->parent->right.release();
-        temp.root->parent=nullptr;
-        std::vector<std::pair<key_type,value_type>> v=temp.vectorize();
-        for(auto i=v.begin(); i!=v.end(); ++i) if(op((*i).first, x) || op(x, (*i).first)) this->insert(*i);
-    }*/
-
-
-  void erase(const key_type& x) {
+    void erase(const key_type& x) {
         node_type* p{_find(x)};
         if(!p) return;
         if(!p->left && !p->right){
