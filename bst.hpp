@@ -18,13 +18,7 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
     }
     if(v.size()==1) median.push_back(v[0]);
 }
-/*
-template <typename T>
-class node;
 
-template<typename node_t, typename T>
-class _iterator;
-*/
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
 class bst{
     using pair_type = std::pair<const key_type, value_type>;
@@ -282,13 +276,13 @@ class bst{
             else p->parent->right.release();
         }
 
-        else if(p->left.get() && !p->right.get()){
+        else if(p->left && !p->right){
             p->left->parent=p->parent;
             if(p==root.get()) root=std::move(p->left);
             else if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
             else p->parent->right=std::move(p->left);
         }
-        else if(!p->left.get() && !p->right.get()){
+        else if(!p->left && p->right){
             p->right->parent=p->parent;
             if(p==root.get()) root=std::move(p->right);
             else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
