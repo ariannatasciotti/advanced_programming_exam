@@ -74,12 +74,19 @@ class bst{
         return nullptr;
     }
 
+    
+    //FIND MIN
+    
     node_type* findmin(node_type* node){
         if(!node->left.get()){
             return node;
         } else{
             return this->findmin(node->left.get());
         }
+    }
+    node_type* leftmost(node_type* node){
+        if(!node->right) return node->parent;
+        else return findmin(node->right.get());
     }
 
 
@@ -236,19 +243,29 @@ class bst{
         return (*p.first).second;
     }
 
+        
+    // SIZE
+               
+    std::size_t size() const{
+        size_t count=0;
+        for(auto i=cbegin(); i!=cend(); ++i) ++count;
+        return count;
+    }
+        
 
-    /* VECTORIZE*/
+    // VECTORIZE
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
         std::vector<std::pair<key_type,value_type>> v;
-
-        for(const_iterator i=this->begin(); i!=this->end(); ++i) {
+        v.reserve(size());
+        for(auto i=this->begin(); i!=this->end(); ++i) {
             v.emplace_back(*i);
         }
         return v;
     }
 
-    /* BALANCE */
+        
+    // BALANCE
 
     void balance() {
         if (!unbalanced()) return;
@@ -259,9 +276,22 @@ class bst{
         for(auto i : temp) this->insert(i);
     }
 
+    // ERASE
+        
     void erase(const key_type& x) {
         node_type* p{_find(x)};
         if(!p) return;
+        if(p==root.get()){
+            root.release(p->right);
+            if(p->right) root.
+        }
+        else if(p->parent->left.get()==p){
+            p->parent->left.reset(p->right)
+        }
+        else
+        delete p;
+        }
+        
         if(!p->left && !p->right){
             if(p==root.get()) root.release();
             else if(p->parent->left.get()==p) p->parent->left.release();
