@@ -16,6 +16,8 @@ int main(){
     //albero.insert(a);
     //albero.emplace(12,20);
     albero.insert({35,12});
+    //albero.insert(std::make_pair(40,10));
+    //albero.insert(std::make_pair(33,10));
     //albero.insert(std::make_pair<const int,foo>(35,{}));
     //std::pair<const int,foo> a=std::make_pair<const int,foo>(35,{});
     //albero.insert(a);
@@ -28,6 +30,7 @@ int main(){
     //bst<int,int> pippo=std::move(albero);
     //bst<int,int> pippo{albero};
         albero.insert(std::make_pair(50,10));
+    albero.insert(std::make_pair(40,10));
     albero.insert(std::make_pair(3,10));
     albero.emplace(9,12);
     albero.emplace(std::make_pair(13,10));
@@ -46,7 +49,8 @@ int main(){
     //pippo.print();
     //albero.unbalanced();
     //pippo.balance();
-    albero.erase(35);
+    albero.erase(1);
+    std::cout<<"albero dopo erase:"<<std::endl<<albero<<std::endl;
     /*std::cout<<"albero dopo erase:"<<std::endl<<albero<<std::endl;
     bst<int,int> pippo=std::move(albero);
     std::cout<<"pippo dopo la move:"<<pippo<<std::endl;

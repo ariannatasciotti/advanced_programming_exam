@@ -284,24 +284,50 @@ class bst{
     void erase(const key_type& x) {
         node_type* p{_find(x)};
         if(!p) return;
+        auto l=leftmost(p);
         if(p==root.get()){
-            if(p->right) root.reset(p->right.get());
-            if(p->left) p->left->parent= findmin(p->right.get());
-            root.reset(p->left.get());
+            root.release();
+            if(p->right){
+                p->right->parent=nullptr;
+                root.reset(p->right.release());
+                if(p->left){
+                    p->left->parent=l;
+                    l->left.reset(p->left.release());
+                }
+            }
+            else if(p->left){
+                p->left->parent=nullptr;
+                root.reset(p->left.release());
+            }
         }
         else if(p->parent->left.get()==p){
-            if(p->right) p->parent->left.reset(p->right.get());
-            if(p->left) p->left->parent=findmin(p->right.get());
-            p->parent->left.reset(p->left.get());
+            p->parent->left.release();
+            if(p->right){
+                p->right->parent=p->parent;
+                p->parent->left.reset(p->right.release());
+            }
+            if(p->left){
+                p->left->parent=l;
+                l->left.reset(p->left.release());
+            }
         }
         else{
-            if(p->right) p->parent->right.reset(p->right.get());
-            if(p->left) p->left->parent=findmin(p->right.get());
-            p->parent->right.reset(p->left.get());
+            p->parent->right.release();
+            if(p->left){
+                p->left->parent=l;
+                if(p->right) l->left.reset(p->left.release());
+                else l->right.reset(p->left.release());
+            }
+            if(p->right){
+                p->right->parent=p->parent;
+                p->parent->right.reset(p->right.release());
+            }
         }
+        delete p;
     }
         
-       /* if(!p->left && !p->right){
+       /*
+            if(!p->left && !p->right){
             if(p==root.get()) root.release();
             else if(p->parent->left.get()==p) p->parent->left.release();
             else p->parent->right.release();
