@@ -5,6 +5,8 @@
 #include "iterator.hpp"
 #include <vector>
 
+//REORDER (given a vector ordered in some way, returns another vector containing "moving" median values)
+
 template <typename T>
 void reorder(std::vector<T>& v, std::vector<T>& median){
     auto value=v[v.size()/2];
@@ -29,34 +31,33 @@ class bst{
     cmp_op op;
     std::unique_ptr<node_type> root;
 
+    //UTILITY INSERT (with forwarding reference)
+
     template<typename ot>
     std::pair<iterator, bool> _insert(ot&& x){
-           if(!root){
-               root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
-               return std::make_pair(iterator{root.get()}, true);
-           }
-           node_type* temp=root.get();
-           while((op(temp->element.first,x.first) && temp->right != nullptr) || (op(x.first,temp->element.first) && temp->left != nullptr)){
-               if(op(temp->element.first,x.first)) temp=temp->right.get();
-               else temp=temp->left.get();
-           }
-                 if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first)))
-                    return std::make_pair(iterator{temp}, false);
-                 else{
-                 if(op(temp->element.first,x.first)){
-                   temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
-                   return std::make_pair(iterator{temp->right.get()}, true);
-
-                   }
-                 else {
-                   temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
-                   return std::make_pair(iterator{temp->left.get()}, true);
-
-                   }
-                 }
+        if(!root){
+            root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
+            return std::make_pair(iterator{root.get()}, true);
+        }
+    node_type* temp=root.get();
+    while((op(temp->element.first,x.first) && temp->right != nullptr) || (op(x.first,temp->element.first) && temp->left != nullptr)){
+        if(op(temp->element.first,x.first)) temp=temp->right.get();
+        else temp=temp->left.get();
+    }
+    if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first))) return std::make_pair(iterator{temp}, false);
+    else{
+        if(op(temp->element.first,x.first)){
+            temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
+            return std::make_pair(iterator{temp->right.get()}, true);
+        }
+        else {
+            temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
+            return std::make_pair(iterator{temp->left.get()}, true);
+        }
+    }
     }
 
-    // FIND PUNTATORE
+    //UTILITY FIND (returns pointer to the node)
     node_type* _find(const key_type& x){
         node_type* temp=root.get();
         while(temp){
@@ -74,33 +75,30 @@ class bst{
         return nullptr;
     }
 
-    
-    //FIND MIN
-    
+    //FINDMIN (returns leftmost node on right branch)
+
     node_type* findmin(node_type* node){
         if(!node->left.get()){
             return node;
         } else{
-            return this->findmin(node->left.get());
+            return findmin(node->left.get());
         }
     }
-    
-    // LEFT MOST
-    
+
+    // LEFTMOST (returns leftmost node on right branch or father if no right child is present)
+
     node_type* leftmost(node_type* node){
         if(!node->right) return node->parent;
         else return findmin(node->right.get());
     }
 
-
     public:
     explicit bst(cmp_op x): op{x}{}
-    explicit bst(node_type* r): root{r}{};
     bst() noexcept=default;
     ~bst() noexcept=default;
 
 
-    /* COPY constructor and overload of operator = for deep copy */
+    // COPY constructor and overload of operator= for deep copy
     bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
     bst& operator=(const bst& b){
         this->clear();
@@ -109,17 +107,10 @@ class bst{
         return *this;
     }
 
-    /* MOVE constructor and overload of operator = */
+    // MOVE constructor and overload of operator=
 
-    bst(bst&& b) noexcept: op{std::move(b.op)}, root{std::move(b.root)} {//move op
-        std::cout<<"Move \n";
-    }
-
-    bst& operator=(bst&& b) noexcept{
-        root=std::move(b.root);
-        op=std::move(b.op);
-        return *this;
-    }
+    bst(bst&& b) noexcept=default;
+    bst& operator=(bst&& b) noexcept=default;
 
     // CLEAR
 
@@ -127,6 +118,7 @@ class bst{
         root.reset(nullptr);
     }
 
+    //BEGIN & END
 
     iterator begin() noexcept {
         if(!root) return iterator{nullptr};
@@ -155,16 +147,14 @@ class bst{
 
     const_iterator cend() const noexcept { return const_iterator{nullptr}; }
 
-
-
-    /* INSERT LVALUE */
+    // INSERT LVALUE
 
     std::pair<iterator, bool> insert(const pair_type& x){
         std::cout<<"insert lvalue"<<std::endl;
         return _insert(x);
     }
 
-    /* INSERT RVALUE*/
+    // INSERT RVALUE
 
     std::pair<iterator, bool> insert(pair_type&& x){
         std::cout<<"insert rvalue"<<std::endl;
@@ -195,7 +185,7 @@ class bst{
                 temp=temp->left.get();
             }
         }
-        return this->end();
+        return end();
     }
 
 
@@ -215,7 +205,7 @@ class bst{
                 temp=temp->left.get();
             }
         }
-        return this->cend();
+        return cend();
     }
 
     // PUT TO OPERATOR
@@ -223,12 +213,11 @@ class bst{
     friend std::ostream& operator<<(std::ostream& os, const bst& x) {
         for(const_iterator i=x.begin(); i!=x.end(); ++i) {
             os<<(*i).first<<" "<<(*i).second<<std::endl;
-            //os<<"pippo ";
         }
         return os;
     }
 
-    /* SUBSCRIPTING OPERATOR LVALUE */
+    // SUBSCRIPTING OPERATOR LVALUE
 
      value_type& operator[](const key_type& x){
         auto f=find(x);
@@ -237,7 +226,7 @@ class bst{
         return (*p.first).second;
      }
 
-    /* SUBSCRIPTING OPERATOR RVALUE */
+    // SUBSCRIPTING OPERATOR RVALUE
 
     value_type& operator[](key_type&& x){
         auto f=find(std::move(x));
@@ -246,41 +235,41 @@ class bst{
         return (*p.first).second;
     }
 
-        
-    // SIZE
-               
+
+    // SIZE (just returns the number of nodes of a tree)
+
     std::size_t size() const{
         size_t count=0;
         for(auto i=cbegin(); i!=cend(); ++i) ++count;
         return count;
     }
-        
 
-    // VECTORIZE
+
+    // VECTORIZE (stores the nodes of a tree in a std::vector)
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
         std::vector<std::pair<key_type,value_type>> v;
         v.reserve(size());
-        for(auto i=this->begin(); i!=this->end(); ++i) {
+        for(auto i=begin(); i!=end(); ++i) {
             v.emplace_back(*i);
         }
         return v;
     }
 
-        
+
     // BALANCE
 
     void balance() {
         if (!unbalanced()) return;
-        std::vector<std::pair<key_type,value_type>> v=this->vectorize();
+        std::vector<std::pair<key_type,value_type>> v=vectorize();
         std::vector<std::pair<key_type,value_type>> temp;
         reorder(v, temp);
-        this->clear();
-        for(auto i : temp) this->insert(i);
+        clear();
+        for(auto i : temp) _insert(i);
     }
 
     // ERASE
-        
+
     void erase(const key_type& x) {
         node_type* p{_find(x)};
         if(!p) return;
@@ -325,7 +314,7 @@ class bst{
         }
         delete p;
     }
-        
+
        /*
             if(!p->left && !p->right){
             if(p==root.get()) root.release();
@@ -357,6 +346,7 @@ class bst{
 
         }*/
 
+    //UNBALANCED
 
     bool unbalanced() const noexcept{
         auto a=root.get()->unbalanced();
@@ -366,6 +356,5 @@ class bst{
             }
         return false;
     }
-
 };
 #endif
