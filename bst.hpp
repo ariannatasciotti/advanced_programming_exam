@@ -18,13 +18,13 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
     }
     if(v.size()==1) median.push_back(v[0]);
 }
-
+/*
 template <typename T>
 class node;
 
 template<typename node_t, typename T>
 class _iterator;
-
+*/
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
 class bst{
     using pair_type = std::pair<const key_type, value_type>;
