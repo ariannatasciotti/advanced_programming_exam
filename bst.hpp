@@ -171,7 +171,7 @@ class bst{
     }
 
 
-    // ITERATOR FIND
+    // ITERATOR FIND (returns iterator to the node)
 
     iterator find(const key_type& x) noexcept{
         node_type* temp=root.get();
@@ -191,7 +191,7 @@ class bst{
     }
 
 
-    // CONST_ITERATOR FIND
+    // CONST_ITERATOR FIND (returns const iterator to the node)
 
     const_iterator find(const key_type& x) const noexcept{
         node_type* temp=root.get();
@@ -210,7 +210,7 @@ class bst{
         return cend();
     }
 
-    // PUT TO OPERATOR
+    // PUT TO OPERATOR (prints the tree in order using iterator)
 
     friend std::ostream& operator<<(std::ostream& os, const bst& x) {
         for(const_iterator i=x.begin(); i!=x.end(); ++i) {
@@ -242,7 +242,7 @@ class bst{
 
     // SIZE (just returns the number of nodes of a tree)
 
-    std::size_t size() const{
+    std::size_t size() const noexcept{
         size_t count=0;
         for(auto i=cbegin(); i!=cend(); ++i) ++count;
         return count;
@@ -261,7 +261,7 @@ class bst{
     }
 
 
-    // BALANCE
+    // BALANCE (the tree is stored into a vector; then calls reorder, clear and inserts the nodes stored in temp)
 
     void balance() {
         if (!unbalanced()) return;
@@ -272,7 +272,7 @@ class bst{
         for(auto i : temp) _insert(i);
     }
 
-    // ERASE
+    // ERASE 
 
     void erase(const key_type& x) {
         node_type* p{_find(x)};
@@ -351,7 +351,7 @@ class bst{
 
         }*/
 
-    //UNBALANCED
+    //UNBALANCED (check if the tree is balanced by calling unbalanced function in class node)
 
     bool unbalanced() const noexcept{
         auto a=root.get()->unbalanced();
