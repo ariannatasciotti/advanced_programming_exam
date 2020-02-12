@@ -58,7 +58,7 @@ class bst{
     }
 
     //UTILITY FIND (returns pointer to the node)
-    node_type* _find(const key_type& x){
+    node_type* _find (const key_type& x)const noexcept{
         node_type* temp=root.get();
         while(temp){
             key_type key=temp->element.first;
@@ -77,7 +77,7 @@ class bst{
 
     //FINDMIN (returns leftmost node on right branch)
 
-    node_type* findmin(node_type* node){
+    node_type* findmin(node_type* node)const noexcept{
         if(!node->left.get()){
             return node;
         } else{
@@ -87,7 +87,7 @@ class bst{
 
     // LEFTMOST (returns leftmost node on right branch or father if no right child is present)
 
-    node_type* leftmost(node_type* node){
+    node_type* leftmost(node_type* node)const noexcept{
         if(!node->right) return node->parent;
         else return findmin(node->right.get());
     }
@@ -121,6 +121,7 @@ class bst{
     //BEGIN & END
 
     iterator begin() noexcept {
+        std::cout<<"non const iterator \n \n \n\n";
         if(!root) return iterator{nullptr};
         node_type* temp=root.get();
         while(temp->left.get()) temp=temp->left.get();
@@ -130,6 +131,7 @@ class bst{
     iterator end() noexcept { return iterator{nullptr}; } //CONTROLLARE NOEXCEPT
 
     const_iterator begin() const noexcept{
+        std::cout<<"const iterator \n \n \n\n";
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
         while(temp->left.get()) temp=temp->left.get();
@@ -220,6 +222,7 @@ class bst{
     // SUBSCRIPTING OPERATOR LVALUE
 
      value_type& operator[](const key_type& x){
+        std::cout<<"lvalue subscript \n";
         auto f=find(x);
         if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({x,value_type{}});
@@ -229,6 +232,7 @@ class bst{
     // SUBSCRIPTING OPERATOR RVALUE
 
     value_type& operator[](key_type&& x){
+        std::cout<<"rvalue subscript \n";
         auto f=find(std::move(x));
         if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({std::move(x),value_type{}});
@@ -274,6 +278,7 @@ class bst{
         node_type* p{_find(x)};
         if(!p) return;
         auto l=leftmost(p);
+        std::cout<<(*l).element.first<<" \n \n";
         if(p==root.get()){
             root.release();
             if(p->right){
