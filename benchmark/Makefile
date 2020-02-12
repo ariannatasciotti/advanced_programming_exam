@@ -1,9 +1,10 @@
 SRC = benchmark.cpp
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++14
+CXXFLAGS = -Wall -Wextra -std=c++14 -I..
 
 EXE = $(SRC:.cpp=.x)
 
+VPATH = ..
 
 .SUFFIXES:
 SUFFIXES =
@@ -18,7 +19,7 @@ all: $(EXE)
 
 %.x: %.cpp
 
-	$(CXX) $< -o $@ $(CXXFLAGS)
+	$(CXX)  $< -o $@ $(CXXFLAGS)
 
 
 clean:
@@ -26,4 +27,4 @@ clean:
 
 .PHONY: clean
 
-benchmark.x: ../iterator.hpp ../node.hpp ../bst.hpp
+benchmark.x: iterator.hpp node.hpp bst.hpp

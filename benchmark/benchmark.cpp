@@ -4,7 +4,7 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
-#include "../bst.hpp"
+#include "bst.hpp"
 #include <map>
 
 int main(int argc, char **argv){
@@ -13,6 +13,7 @@ int main(int argc, char **argv){
     std::vector<int> v;
     std::vector<double> d;
     long unsigned int count=0u;
+    if(argc!=2) return 1;
     const std::size_t size=atoi(argv[1]);
     double step=10./size;
     double oneoversize=1./size;
@@ -47,5 +48,5 @@ int main(int argc, char **argv){
     std::cout<<"time with std::map: "<<elapsed.count()*oneoversize<<std::endl;
     //std::cout<<count;
     
-return 0;
+	return 0;
 }
