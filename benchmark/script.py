@@ -1,5 +1,4 @@
 import subprocess
-import os
 import numpy as np
 
 
@@ -11,10 +10,7 @@ def stdev(x):
     for i in x:
         temp+=(i-avg)*(i-avg)
     return [avg, np.sqrt(temp/(len(x)+1))]
-        
-
-
-#SERIAL
+    
 unbalanced_out=[]
 balanced_out=[]
 std_map_out=[]
@@ -36,8 +32,3 @@ for i in range(len(dim)):
     print(unbalanced_out)
     print(balanced_out)
     print(std_map_out)
-'''
-file_out=open("serial.txt", "w+")
-file_out.write(str(serialout))
-file_out.close()
-'''
