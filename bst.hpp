@@ -121,17 +121,15 @@ class bst{
     //BEGIN & END
 
     iterator begin() noexcept {
-        std::cout<<"non const iterator \n \n \n\n";
         if(!root) return iterator{nullptr};
         node_type* temp=root.get();
         while(temp->left.get()) temp=temp->left.get();
         return iterator{temp};
         }
 
-    iterator end() noexcept { return iterator{nullptr}; } //CONTROLLARE NOEXCEPT
+    iterator end() noexcept { return iterator{nullptr}; }
 
     const_iterator begin() const noexcept{
-        std::cout<<"const iterator \n \n \n\n";
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
         while(temp->left.get()) temp=temp->left.get();
@@ -178,7 +176,7 @@ class bst{
         while(temp){
             key_type key=temp->element.first;
             if(!(op(key, x) || op(x, key))){
-        std::cout<<"key "<<x<<" found"<<std::endl;
+        //std::cout<<"key "<<x<<" found"<<std::endl;
                 return iterator{temp};
             }
             else if(op(key, x)){
@@ -188,7 +186,7 @@ class bst{
                 temp=temp->left.get();
             }
         }
-        std::cout<<"key "<<x<<" not found"<<std::endl;
+       // std::cout<<"key "<<x<<" not found"<<std::endl;
         return end();
     }
 
@@ -266,7 +264,7 @@ class bst{
     // BALANCE (the tree is stored into a vector; then calls reorder, clear and inserts the nodes stored in temp)
 
     void balance() {
-        if (!unbalanced()) return;
+       // if (!unbalanced()) return;
         std::vector<std::pair<key_type,value_type>> v=vectorize();
         std::vector<std::pair<key_type,value_type>> temp;
         reorder(v, temp);

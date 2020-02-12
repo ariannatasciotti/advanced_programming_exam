@@ -14,7 +14,9 @@ struct node{
 
     
     node(const T& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{elem}{}
+    
      node(T&& elem, node* p=nullptr) noexcept: right{nullptr}, left{nullptr}, parent{p}, element{std::move(elem)}{}
+    
      node(const node& n, node* p=nullptr): right{nullptr}, left{nullptr}, parent{p}, element{n.element} {
          if(n.right) right=std::make_unique<node>(*n.right, this);
          if(n.left) left=std::make_unique<node>(*n.left, this);
@@ -35,6 +37,7 @@ struct node{
     //UNBALANCED (returns bool (unbalanced) and pointer to unbalanced node)
     
     std::pair<bool,const node*> unbalanced() const noexcept{
+        std::cout<<this<<std::endl;
            std::pair<bool,const node*> l{false,{}};
            std::pair<bool,const node*> r{false,{}};
            std::cout<<"rnum "<<num_nodes().first<<" lnum "<<num_nodes().second<<"\n";
