@@ -1,6 +1,6 @@
 SRC = main.cpp
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++14
+CXXFLAGS = -Wall -Wextra -std=c++14 -DTEST
 
 EXE = $(SRC:.cpp=.x)
 

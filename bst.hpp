@@ -10,7 +10,7 @@
 template <typename T>
 void reorder(std::vector<T>& v, std::vector<T>& median){
     auto value=v[v.size()/2];
-    median.push_back(value);
+    median.emplace_back(value);
     v.erase(v.begin()+v.size()/2);
     if(v.size()>1) {
         std::vector<T> right_s(v.end()-v.size()/2, v.end());
@@ -18,7 +18,7 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
         std::vector<T> left_s(v.begin(), v.begin()+v.size()/2+v.size()%2);
         reorder(left_s,median);
     }
-    if(v.size()==1) median.push_back(v[0]);
+    if(v.size()==1) median.emplace_back(v[0]);
 }
 
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
@@ -264,7 +264,9 @@ class bst{
     // BALANCE (the tree is stored into a vector; then calls reorder, clear and inserts the nodes stored in temp)
 
     void balance() {
-       // if (!unbalanced()) return;
+        #ifdef TEST
+        if (!unbalanced()) return;
+        #endif
         std::vector<std::pair<key_type,value_type>> v=vectorize();
         std::vector<std::pair<key_type,value_type>> temp;
         reorder(v, temp);

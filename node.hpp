@@ -37,7 +37,6 @@ struct node{
     //UNBALANCED (returns bool (unbalanced) and pointer to unbalanced node)
     
     std::pair<bool,const node*> unbalanced() const noexcept{
-        std::cout<<this<<std::endl;
            std::pair<bool,const node*> l{false,{}};
            std::pair<bool,const node*> r{false,{}};
            std::cout<<"rnum "<<num_nodes().first<<" lnum "<<num_nodes().second<<"\n";
