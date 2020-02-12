@@ -178,6 +178,7 @@ class bst{
         while(temp){
             key_type key=temp->element.first;
             if(!(op(key, x) || op(x, key))){
+        std::cout<<"key "<<x<<" found"<<std::endl;
                 return iterator{temp};
             }
             else if(op(key, x)){
@@ -187,6 +188,7 @@ class bst{
                 temp=temp->left.get();
             }
         }
+        std::cout<<"key "<<x<<" not found"<<std::endl;
         return end();
     }
 
@@ -272,7 +274,7 @@ class bst{
         for(auto i : temp) _insert(i);
     }
 
-    // ERASE 
+    // ERASE
 
     void erase(const key_type& x) {
         node_type* p{_find(x)};

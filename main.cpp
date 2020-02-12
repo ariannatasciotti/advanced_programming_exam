@@ -55,5 +55,6 @@ int main(){
     std::cout<<"provo il non const \n";
     (*albero.begin()).second=4;
     std::cout<<albero;
+    albero.find(40);
     return 0;
 }
