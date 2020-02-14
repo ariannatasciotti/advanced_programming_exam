@@ -25,7 +25,6 @@ template <typename key_type, typename value_type, typename cmp_op=std::less<key_
 class bst{
     using pair_type = std::pair<const key_type, value_type>;
     using node_type = node<pair_type>;
-    using node_t = node<std::pair<key_type, value_type>>;
     using iterator = _iterator <node_type, typename node_type::value_type>;
     using const_iterator = _iterator<node_type, const typename node_type::value_type>;
     cmp_op op;
@@ -35,27 +34,28 @@ class bst{
 
     template<typename ot>
     std::pair<iterator, bool> _insert(ot&& x){
-        if(!root){
-            root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
-            return std::make_pair(iterator{root.get()}, true);
-        }
-    node_type* temp=root.get();
-    while((op(temp->element.first,x.first) && temp->right != nullptr) || (op(x.first,temp->element.first) && temp->left != nullptr)){
+    auto f=_find(x.first);
+    if(f) return std::make_pair(iterator{f}, false);
+    if(!root){
+        root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
+        return std::make_pair(iterator{root.get()}, true);
+    }
+    auto temp=root.get();
+    while((op(temp->element.first,x.first) && temp->right) || (op(x.first,temp->element.first) && temp->left)){
         if(op(temp->element.first,x.first)) temp=temp->right.get();
         else temp=temp->left.get();
     }
-    if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first))) return std::make_pair(iterator{temp}, false);
-    else{
-        if(op(temp->element.first,x.first)){
-            temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
-            return std::make_pair(iterator{temp->right.get()}, true);
-        }
-        else {
-            temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
-            return std::make_pair(iterator{temp->left.get()}, true);
-        }
+    //if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first))) return std::make_pair(iterator{temp}, false);
+    if(op(temp->element.first,x.first)){
+        temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
+        return std::make_pair(iterator{temp->right.get()}, true);
+    }
+    else {
+        temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
+        return std::make_pair(iterator{temp->left.get()}, true);
     }
     }
+    
 
     //UTILITY FIND (returns pointer to the node)
     node_type* _find (const key_type& x)const noexcept{

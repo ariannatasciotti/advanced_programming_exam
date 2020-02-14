@@ -56,5 +56,6 @@ int main(){
     (*albero.begin()).second=4;
     std::cout<<albero;
     albero.find(40);
+    albero.balance();
     return 0;
 }
