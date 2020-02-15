@@ -21,6 +21,12 @@ all: $(EXE)
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
 
+documentation: doxygen/doxy.in
+	doxygen $^
+
+.PHONY: documentation
+
+
 clean:
 		rm -f $(EXE) *~
 
