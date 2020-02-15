@@ -1,3 +1,12 @@
+/**
+* @file bst.hpp
+* @author Lorenzo Basile
+* @author Arianna Tasciotti
+* @date February 2020
+* @brief Header containing bst class implementation.
+*/
+
+
 #ifndef _bst_hpp
 #define _bst_hpp
 
@@ -5,7 +14,14 @@
 #include "iterator.hpp"
 #include <vector>
 
-//REORDER (given a vector ordered in some way, returns another vector containing "moving" median values)
+
+  /**
+   * @brief A utility for the function balance(): given a vector ordered in some way, this function builds another vector containing "moving" median values.
+   * Given a vector, the function stores in another vector the median element of the previous vector and removes from the vector the median value. Then, it calls itself
+   * recursively on right and left subvectors, until the size of the vector is equal to one.
+   * @tparam v lvalue reference to std::vector<T> input vector.
+   * @tparam median lvalue reference to std::vector<T> empty vector in which the previous is reordered.
+   */
 
 template <typename T>
 void reorder(std::vector<T>& v, std::vector<T>& median){
@@ -23,41 +39,54 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
 
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
 class bst{
+    
     using pair_type = std::pair<const key_type, value_type>;
     using node_type = node<pair_type>;
-    using node_t = node<std::pair<key_type, value_type>>;
     using iterator = _iterator <node_type, typename node_type::value_type>;
     using const_iterator = _iterator<node_type, const typename node_type::value_type>;
+    
+    /** @brief Comparison operator for bst. */
     cmp_op op;
+    
+    /** @brief Unique pointer to the root node. */
     std::unique_ptr<node_type> root;
 
-    //UTILITY INSERT (with forwarding reference)
+   /**
+    * @brief A utility function called by insert and emplace functions. It calls _find to know if the key is already present in the tree; if it is not, it looks for the right place to insert the new node and allocates it.
+    * @tparam x<ot> input pair.
+    * @return std::pair<iterator,bool> iterator to the new node, true or iterator to already existing node, false.
+    */
 
     template<typename ot>
     std::pair<iterator, bool> _insert(ot&& x){
-        if(!root){
-            root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
-            return std::make_pair(iterator{root.get()}, true);
-        }
-    node_type* temp=root.get();
-    while((op(temp->element.first,x.first) && temp->right != nullptr) || (op(x.first,temp->element.first) && temp->left != nullptr)){
+    auto f=_find(x.first);
+    if(f) return std::make_pair(iterator{f}, false);
+    if(!root){
+        root=std::make_unique<node_type>(std::forward<ot>(x), nullptr);
+        return std::make_pair(iterator{root.get()}, true);
+    }
+    auto temp=root.get();
+    while((op(temp->element.first,x.first) && temp->right) || (op(x.first,temp->element.first) && temp->left)){
         if(op(temp->element.first,x.first)) temp=temp->right.get();
         else temp=temp->left.get();
     }
-    if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first))) return std::make_pair(iterator{temp}, false);
-    else{
-        if(op(temp->element.first,x.first)){
-            temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
-            return std::make_pair(iterator{temp->right.get()}, true);
-        }
-        else {
-            temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
-            return std::make_pair(iterator{temp->left.get()}, true);
-        }
+    if(op(temp->element.first,x.first)){
+        temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
+        return std::make_pair(iterator{temp->right.get()}, true);
+    }
+    else {
+        temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
+        return std::make_pair(iterator{temp->left.get()}, true);
     }
     }
+    
 
-    //UTILITY FIND (returns pointer to the node)
+   /**
+    * @brief A utility function implemented to return a pointer instead of an iterator. It performs a binary search of a given key starting from the root.
+    * @tparam x const lvalue reference to key.
+    * @return node_type* pointer to the node containing the key or nullptr.
+    */
+    
     node_type* _find (const key_type& x)const noexcept{
         node_type* temp=root.get();
         while(temp){
@@ -75,7 +104,11 @@ class bst{
         return nullptr;
     }
 
-    //FINDMIN (returns leftmost node on right branch)
+   /**
+    * @brief A utility function implemented to find the leftmost node of a subtree, given a pointer to its root.
+    * @tparam node input pointer to a node.
+    * @return node_type* pointer to the leftmost node.
+    */
 
     node_type* findmin(node_type* node)const noexcept{
         if(!node->left.get()){
@@ -85,21 +118,54 @@ class bst{
         }
     }
 
-    // LEFTMOST (returns leftmost node on right branch or father if no right child is present)
-
+   /**
+    * @brief A utility function implemented to find the place to attach the left child of the node to be erased, called by function erase.
+    * @tparam node input pointer to a node.
+    * @return node_type* pointer to the leftmost node of the right subtree or to parent.
+    */
+    
     node_type* leftmost(node_type* node)const noexcept{
         if(!node->right) return node->parent;
         else return findmin(node->right.get());
     }
 
     public:
+    
+   /**
+    * @brief Constructs a new bst object with a comparison operator of type cmp_op.
+    * @tparam x object of type cmp_op.
+    */
+    
     explicit bst(cmp_op x): op{x}{}
+    
+   /**
+    * @brief Constructs a new bst object.
+    */
+    
     bst() noexcept=default;
+    
+   /**
+    * @brief Destroys the bst object.
+    */
+    
     ~bst() noexcept=default;
 
 
-    // COPY constructor and overload of operator= for deep copy
+    
+   /**
+    * @brief Copy constructor.
+    * Creates a deep copy of a bst tree calling the copy constructor of node.
+    * @tparam b const lvalue reference to the tree to be copied.
+    */
+    
     bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
+    
+   /**
+    * @brief Copy assignment.
+    * @tparam b const lvalue reference to the tree to be copied.
+    * @return bst&.
+    */
+        
     bst& operator=(const bst& b){
         this->clear();
         op=b.op;
@@ -107,18 +173,33 @@ class bst{
         return *this;
     }
 
-    // MOVE constructor and overload of operator=
+   /**
+    * @brief Default move constructor.
+    * @tparam b rvalue reference to the tree to be moved.
+    */
 
     bst(bst&& b) noexcept=default;
+        
+   /**
+    * @brief Default move assignment.
+    * @tparam b rvalue reference to the tree to be moved.
+    * @return bst&.
+    */
+        
     bst& operator=(bst&& b) noexcept=default;
-
-    // CLEAR
+   
+   /**
+    * @brief This function empties out the tree, releasing the memory occupied by the nodes. root is set to nullptr.
+    */
 
     void clear() noexcept{
         root.reset(nullptr);
     }
 
-    //BEGIN & END
+   /**
+    * @brief Overloaded function that returns an iterator pointing to the leftmost node of the tree.
+    * @return iterator pointing to the leftmost node.
+    */
 
     iterator begin() noexcept {
         if(!root) return iterator{nullptr};
@@ -127,8 +208,18 @@ class bst{
         return iterator{temp};
         }
 
+   /**
+    * @brief Overloaded function that returns an iterator pointing to one node after the rightmost one.
+    * @return iterator pointing to one node after the rightmost one.
+    */
+        
     iterator end() noexcept { return iterator{nullptr}; }
-
+    
+   /**
+    * @brief Overloaded function that returns a const iterator pointing to the leftmost node of the tree.
+    * @return const iterator pointing to the leftmost node.
+    */
+        
     const_iterator begin() const noexcept{
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
@@ -136,8 +227,18 @@ class bst{
         return const_iterator{temp};
         }
 
+   /**
+    * @brief Overloaded function that returns a const iterator pointing to one node after the rightmost one.
+    * @return const iterator pointing to one node after the rightmost one.
+    */
+        
     const_iterator end() const noexcept { return const_iterator{nullptr}; }
 
+   /**
+    * @brief This function returns a const iterator pointing to the leftmost node of the tree.
+    * @return const iterator pointing to the leftmost node.
+    */
+        
     const_iterator cbegin() const noexcept {
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
@@ -145,23 +246,40 @@ class bst{
         return const_iterator{temp};
         }
 
+   /**
+    * @brief This function returns a const iterator pointing to one node after the rightmost one.
+    * @return const iterator pointing to one node after the rightmost one.
+    */
+        
     const_iterator cend() const noexcept { return const_iterator{nullptr}; }
 
-    // INSERT LVALUE
+   /**
+    * @brief Overloaded function that inserts a new node with the given pair, calling _insert.
+    * @tparam x const lvalue reference to the pair to be inserted in the tree.
+    * @return std::pair<iterator,bool> returned by _insert.
+    */
 
     std::pair<iterator, bool> insert(const pair_type& x){
         std::cout<<"insert lvalue"<<std::endl;
         return _insert(x);
     }
 
-    // INSERT RVALUE
+   /**
+    * @brief Overloaded function that inserts a new node with the given pair, calling _insert using std::move.
+    * @tparam x rvalue reference to the pair to be inserted in the tree.
+    * @return std::pair<iterator,bool> returned by _insert.
+    */
 
     std::pair<iterator, bool> insert(pair_type&& x){
         std::cout<<"insert rvalue"<<std::endl;
         return _insert(std::move(x));
     }
 
-    // EMPLACE
+   /**
+    * @brief This function inserts a new node both with a std::pair <key,value> and with a key and a value.
+    * @tparam args a std::pair or key and value.
+    * @return std::pair<iterator,bool> returned by _insert.
+    */
 
     template<class... Args>
     std::pair<iterator, bool> emplace(Args&&... args ){
@@ -169,7 +287,11 @@ class bst{
     }
 
 
-    // ITERATOR FIND (returns iterator to the node)
+   /**
+    * @brief Overloaded function that searches for a node in the tree, given a key.
+    * @tparam x const lvalue reference to the key to look for.
+    * @return iterator pointing to the node containing the key or to nullptr if the key is not found.
+    */
 
     iterator find(const key_type& x) noexcept{
         node_type* temp=root.get();
@@ -191,7 +313,11 @@ class bst{
     }
 
 
-    // CONST_ITERATOR FIND (returns const iterator to the node)
+   /**
+    * @brief Overloaded function that searches for a node in the tree, given a key.
+    * @tparam x const lvalue reference to the key to look for.
+    * @return const iterator pointing to the node containing the key or to nullptr if the key is not found.
+    */
 
     const_iterator find(const key_type& x) const noexcept{
         node_type* temp=root.get();
@@ -210,7 +336,12 @@ class bst{
         return cend();
     }
 
-    // PUT TO OPERATOR (prints the tree in order using iterator)
+   /**
+    * @brief Friend operator that prints the tree in order (from left to right) using const iterators.
+    * @param os output stream object.
+    * @tparam x const lvalue reference to binary search tree.
+    * @return std::ostream& output stream object.
+    */
 
     friend std::ostream& operator<<(std::ostream& os, const bst& x) {
         for(const_iterator i=x.begin(); i!=x.end(); ++i) {
@@ -219,7 +350,12 @@ class bst{
         return os;
     }
 
-    // SUBSCRIPTING OPERATOR LVALUE
+   /**
+    * @brief Overloaded operator that looks for a key to return the corresponding value. If the key is not present in the tree, it inserts a node with that key and a
+    * default value.
+    * @tparam x const lvalue reference to key.
+    * @return value_type& value mapped by the key.
+    */
 
      value_type& operator[](const key_type& x){
         std::cout<<"lvalue subscript \n";
@@ -229,7 +365,12 @@ class bst{
         return (*p.first).second;
      }
 
-    // SUBSCRIPTING OPERATOR RVALUE
+   /**
+    * @brief Overloaded operator that looks for a key to return the corresponding value. If the key is not present in the tree, it inserts a node with that key and a
+    * default value.
+    * @tparam x rvalue reference to key.
+    * @return value_type& value mapped by the key.
+    */
 
     value_type& operator[](key_type&& x){
         std::cout<<"rvalue subscript \n";
@@ -240,7 +381,10 @@ class bst{
     }
 
 
-    // SIZE (just returns the number of nodes of a tree)
+   /**
+    * @brief This function counts the number of nodes in the tree.
+    * @return std::size_t number of nodes in the tree.
+    */
 
     std::size_t size() const noexcept{
         size_t count=0;
@@ -249,7 +393,10 @@ class bst{
     }
 
 
-    // VECTORIZE (stores the nodes of a tree in a std::vector)
+   /**
+    * @brief This function stores in a vector the pairs key,value stored in nodes of the tree.
+    * @return std::vector<std::pair<key_type,value_type>> vector containing the pairs stored in the nodes of the tree.
+    */
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
         std::vector<std::pair<key_type,value_type>> v;
@@ -261,8 +408,11 @@ class bst{
     }
 
 
-    // BALANCE (the tree is stored into a vector; then calls reorder, clear and inserts the nodes stored in temp)
-
+   /**
+    * @brief This function balances the tree by calling vectorize, reorder, clear and _insert. At first, it stores the nodes of the tree in a vector calling vectorize; then, the
+    * vector is reordered calling reorder. Finally, after calling clear to empty out the tree, the pairs are reinserted calling _insert.
+    */
+        
     void balance() {
         #ifdef TEST
         if (!unbalanced()) return;
@@ -274,7 +424,14 @@ class bst{
         for(auto i : temp) _insert(i);
     }
 
-    // ERASE
+   /**
+    * @brief This function erases the node with the key given as input (if present) from the tree. At first, it calls _find to have a pointer to the node that has to be
+    * erased; then, it calls leftmost in order to know where the possible left child of the node to erase has to be attached. There are three possible cases: the node to
+    * erase is the root, it is a left child or it is a right child. In all these cases, the ownership of the node that has to be erased is released and two subcases can arise:
+    * if the node that is being erased has a right child, it substitutes the parent and the possible left child is attached to the leftmost node of the right subtree, otherwise
+    * the left child substitues the parent. Finally, the pointer to the node that is being erased is used to delete the node.
+    * @tparam x const lvalue reference to key.
+    */
 
     void erase(const key_type& x) {
         node_type* p{_find(x)};
@@ -291,7 +448,7 @@ class bst{
                     l->left.reset(p->left.release());
                 }
             }
-            else if(p->left){
+            if(p->left){
                 p->left->parent=nullptr;
                 root.reset(p->left.release());
             }
@@ -322,41 +479,13 @@ class bst{
         delete p;
     }
 
-       /*
-            if(!p->left && !p->right){
-            if(p==root.get()) root.release();
-            else if(p->parent->left.get()==p) p->parent->left.release();
-            else p->parent->right.release();
-        }
-
-        else if(p->left && !p->right){
-            p->left->parent=p->parent;
-            if(p==root.get()) root=std::move(p->left);
-            else if(p->parent->left.get()==p) p->parent->left=std::move(p->left);
-            else p->parent->right=std::move(p->left);
-        }
-        else if(!p->left && p->right){
-            p->right->parent=p->parent;
-            if(p==root.get()) root=std::move(p->right);
-            else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
-            else p->parent->right=std::move(p->right);
-        }
-
-        else{
-            node_type* min{this->findmin(p->right.get())};
-            p->left->parent=min;
-            min->left=std::move(p->left);
-            p->right->parent=p->parent;
-            if(p==root.get()) root=std::move(p->right);
-            else if(p->parent->left.get()==p) p->parent->left=std::move(p->right);
-            else p->parent->right=std::move(p->right);
-
-        }*/
-
-    //UNBALANCED (check if the tree is balanced by calling unbalanced function in class node)
+   /**
+    * @brief This function checks if the tree is unbalanced by calling the function unbalanced_node of struct node.
+    * @return bool true if the tree is unbalanced.
+    */
 
     bool unbalanced() const noexcept{
-        auto a=root.get()->unbalanced();
+        auto a=root.get()->unbalanced_node();
         if(a.first){
             std::cout<<"Unbalance on node "<<a.second->element.first<<std::endl;
             return true;

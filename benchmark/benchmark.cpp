@@ -27,7 +27,7 @@ int main(int argc, char **argv){
     for(i=0; i<size; i++) {
         tree_map.emplace(v[i],d[i]);
         tree.emplace(v[i],d[i]);
-        
+
     }
     auto t=std::chrono::high_resolution_clock::now(); //start of time measurement
     for(i=0; i<size; i++) count+=(*tree.find(i)).first;
@@ -47,6 +47,6 @@ int main(int argc, char **argv){
     elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-t);
     std::cout<<"time with std::map: "<<elapsed.count()*oneoversize<<std::endl;
     //std::cout<<count;
-    
+
 	return 0;
 }
