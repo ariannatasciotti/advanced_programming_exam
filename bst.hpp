@@ -25,6 +25,7 @@
 
 template <typename T>
 void reorder(std::vector<T>& v, std::vector<T>& median){
+    if(v.size()==0) return;
     auto value=v[v.size()/2];
     median.emplace_back(value);
     v.erase(v.begin()+v.size()/2);
@@ -399,8 +400,10 @@ class bst{
     */
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
+        auto dim=size();
         std::vector<std::pair<key_type,value_type>> v;
-        v.reserve(size());
+        if(dim==0) return v;
+        v.reserve(dim);
         for(auto i=begin(); i!=end(); ++i) {
             v.emplace_back(*i);
         }

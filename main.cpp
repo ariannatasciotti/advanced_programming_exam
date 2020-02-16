@@ -62,7 +62,7 @@ int main(){
     albero.balance();
     albero.unbalanced();
     //PROVA COPY
-    bst<int,int> albero2=albero;
+    /*bst<int,int> albero2=albero;
     std::cout<<"albero1: \n"<<albero<<"\n albero2: \n"<<albero2<<std::endl;
     //PROVA MOVE
     bst<int,int> albero3=std::move(albero2);
@@ -77,6 +77,6 @@ int main(){
     (*albero.begin()).second=4;
     std::cout<<albero;
     albero.find(40);
-    albero.balance();
+    albero.balance();*/
     return 0;
 }

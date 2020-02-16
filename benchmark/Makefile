@@ -1,6 +1,6 @@
 SRC = benchmark.cpp
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++14 -I.. -O3
+CXXFLAGS = -Wall -Wextra -std=c++14 -I..
 
 EXE = $(SRC:.cpp=.x)
 
