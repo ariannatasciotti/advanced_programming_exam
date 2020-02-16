@@ -1,5 +1,6 @@
 # advanced_programming_exam
-Exam repository for Advanced Programming course.
+Exam repository for Advanced Programming course.  
+
 Authors: Lorenzo Basile, Arianna Tasciotti.
 
 ## Structure of the repository
