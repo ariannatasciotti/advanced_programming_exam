@@ -70,12 +70,6 @@ class bst{
         if(op(temp->element.first,x.first)) temp=temp->right.get();
         else temp=temp->left.get();
     }
-<<<<<<< HEAD
-    if(op(temp->element.first,x.first)){
-        temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
-        return std::make_pair(iterator{temp->right.get()}, true);
-=======
-    //if(!(op(temp->element.first,x.first) || op(x.first,temp->element.first))) return std::make_pair(iterator{temp}, false);
     if(op(temp->element.first,x.first)){
         temp->right=std::make_unique<node_type>(std::forward<ot>(x), temp);
         return std::make_pair(iterator{temp->right.get()}, true);
@@ -83,13 +77,7 @@ class bst{
     else {
         temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
         return std::make_pair(iterator{temp->left.get()}, true);
->>>>>>> d3c213703373d86a295ba54b10fe917a41224bc3
     }
-    else {
-        temp->left=std::make_unique<node_type>(std::forward<ot>(x), temp);
-        return std::make_pair(iterator{temp->left.get()}, true);
-    }
-<<<<<<< HEAD
     }
     
 
@@ -99,11 +87,6 @@ class bst{
     * @return node_type* pointer to the node containing the key or nullptr.
     */
     
-=======
-    
-
-    //UTILITY FIND (returns pointer to the node)
->>>>>>> d3c213703373d86a295ba54b10fe917a41224bc3
     node_type* _find (const key_type& x)const noexcept{
         node_type* temp=root.get();
         while(temp){
@@ -120,7 +103,7 @@ class bst{
         }
         return nullptr;
     }
-
+    
    /**
     * @brief A utility function implemented to find the leftmost node of a subtree, given a pointer to its root.
     * @tparam node input pointer to a node.
