@@ -3,14 +3,35 @@
 #include "bst.hpp"
 #include <map>
 
-struct foo{
+struct foo{ //struct used for testing
     foo(){std::cout<<"Default \n";}
     foo(const foo&){std::cout<<"Copy \n";}
     foo(foo&&){std::cout<<"Move \n";}
 };
 
+template <typename t>
+bool compare(const t& a, const t& b) noexcept{  //std::less operator() but defined by us
+    return a<b;
+}
+
+template <typename t>
+class function_object{
+    int parameter; //every time i compare i print this parameter
+    public:
+    explicit function_object(const int p=0) noexcept: parameter{p}{};
+    bool operator()(const t& a, const t& b) const noexcept{ //basically std::less operator(), with a parameter printed every time
+        std::cout<<"parameter: "<<parameter<<std::endl;
+        return a<b;
+    }
+};
+
 int main(){
-    bst<int,int> albero;
+    /*bst<int,int, decltype(compare<int>)(*)> albero(compare<int>);
+    function_object<int> fun(71);
+    bst<int,int, decltype(fun)> albero;
+    bst<int,int, decltype(fun)> albero(71); //this works if function_object's constructor is not marked explicit
+    bst<int,int, decltype(fun)> albero(fun); //otherwise you have to pass a functional_object
+    */
     //PROVE DI EMPLACE E INSERT
     albero.emplace(12,20);
     albero.insert({35,12});
