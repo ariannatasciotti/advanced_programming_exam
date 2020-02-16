@@ -159,7 +159,7 @@ class bst{
     * @tparam b const lvalue reference to the tree to be copied.
     */
     
-    bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {std::cout<<"Copy \n";}
+    bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {}
     
    /**
     * @brief Copy assignment.
@@ -175,19 +175,27 @@ class bst{
     }
 
    /**
-    * @brief Default move constructor.
+    * @brief Move constructor.
     * @tparam b rvalue reference to the tree to be moved.
     */
 
-    bst(bst&& b) noexcept=default;
+    //bst(bst&& b) noexcept=default;
+    bst(bst&& b) noexcept: op{std::move(b.op)} {
+        root.reset(b.root.release());
+    }
         
    /**
-    * @brief Default move assignment.
+    * @brief Move assignment.
     * @tparam b rvalue reference to the tree to be moved.
     * @return bst&.
     */
         
-    bst& operator=(bst&& b) noexcept=default;
+    //bst& operator=(bst&& b) noexcept=default;
+    bst& operator=(bst&& b) noexcept{
+        root.reset(b.root.release());
+        op=std::move(b.op);
+        return *this;
+    }
    
    /**
     * @brief This function empties out the tree, releasing the memory occupied by the nodes. root is set to nullptr.
@@ -261,7 +269,6 @@ class bst{
     */
 
     std::pair<iterator, bool> insert(const pair_type& x){
-        std::cout<<"insert lvalue"<<std::endl;
         return _insert(x);
     }
 
@@ -272,7 +279,6 @@ class bst{
     */
 
     std::pair<iterator, bool> insert(pair_type&& x){
-        std::cout<<"insert rvalue"<<std::endl;
         return _insert(std::move(x));
     }
 
@@ -299,7 +305,6 @@ class bst{
         while(temp){
             key_type key=temp->element.first;
             if(!(op(key, x) || op(x, key))){
-        //std::cout<<"key "<<x<<" found"<<std::endl;
                 return iterator{temp};
             }
             else if(op(key, x)){
@@ -309,7 +314,6 @@ class bst{
                 temp=temp->left.get();
             }
         }
-       // std::cout<<"key "<<x<<" not found"<<std::endl;
         return end();
     }
 
@@ -359,7 +363,6 @@ class bst{
     */
 
      value_type& operator[](const key_type& x){
-        std::cout<<"lvalue subscript \n";
         auto f=find(x);
         if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({x,value_type{}});
@@ -374,7 +377,6 @@ class bst{
     */
 
     value_type& operator[](key_type&& x){
-        std::cout<<"rvalue subscript \n";
         auto f=find(std::move(x));
         if(f!=end()) return (*f).second;
         auto p=_insert<pair_type>({std::move(x),value_type{}});
@@ -440,7 +442,6 @@ class bst{
         node_type* p{_find(x)};
         if(!p) return;
         auto l=leftmost(p);
-        std::cout<<(*l).element.first<<" \n \n";
         if(p==root.get()){
             root.release();
             if(p->right){

@@ -6,7 +6,7 @@
 #include <vector>
 #include "bst.hpp"
 #include <map>
-#define max_size 100000000
+#define max_size 100000000 // maximum number of nodes due to memory limitation
 
 int main(int argc, char **argv){
     bst<int, double> tree;
