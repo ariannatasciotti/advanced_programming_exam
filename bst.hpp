@@ -40,15 +40,15 @@ void reorder(std::vector<T>& v, std::vector<T>& median){
 
 template <typename key_type, typename value_type, typename cmp_op=std::less<key_type>>
 class bst{
-    
+
     using pair_type = std::pair<const key_type, value_type>;
     using node_type = node<pair_type>;
     using iterator = _iterator <node_type, typename node_type::value_type>;
     using const_iterator = _iterator<node_type, const typename node_type::value_type>;
-    
+
     /** @brief Comparison operator for bst. */
     cmp_op op;
-    
+
     /** @brief Unique pointer to the root node. */
     std::unique_ptr<node_type> root;
 
@@ -80,15 +80,15 @@ class bst{
         return std::make_pair(iterator{temp->left.get()}, true);
     }
     }
-    
+
 
    /**
     * @brief A utility function implemented to return a pointer instead of an iterator. It performs a binary search of a given key starting from the root.
     * @tparam x const lvalue reference to key.
     * @return node_type* pointer to the node containing the key or nullptr.
     */
-    
-    node_type* _find (const key_type& x)const noexcept{
+
+    node_type* _find (const key_type& x)const {
         node_type* temp=root.get();
         while(temp){
             key_type key=temp->element.first;
@@ -104,7 +104,7 @@ class bst{
         }
         return nullptr;
     }
-    
+
    /**
     * @brief A utility function implemented to find the leftmost node of a subtree, given a pointer to its root.
     * @tparam node input pointer to a node.
@@ -124,53 +124,55 @@ class bst{
     * @tparam node input pointer to a node.
     * @return node_type* pointer to the leftmost node of the right subtree or to parent.
     */
-    
+
     node_type* leftmost(node_type* node)const noexcept{
         if(!node->right) return node->parent;
         else return findmin(node->right.get());
     }
 
     public:
-    
+
    /**
     * @brief Constructs a new bst object with a comparison operator of type cmp_op.
     * @tparam x object of type cmp_op.
     */
-    
+
     explicit bst(cmp_op x): op{x}{}
-    
+
    /**
     * @brief Constructs a new bst object.
     */
-    
+
     bst() noexcept=default;
-    
+
    /**
     * @brief Destroys the bst object.
     */
-    
+
     ~bst() noexcept=default;
 
 
-    
+
    /**
     * @brief Copy constructor.
     * Creates a deep copy of a bst tree calling the copy constructor of node.
     * @tparam b const lvalue reference to the tree to be copied.
     */
-    
+
     bst(const bst& b): op{b.op}, root{(!b.root)? nullptr:std::make_unique<node_type>(*b.root)} {}
-    
+
    /**
     * @brief Copy assignment.
     * @tparam b const lvalue reference to the tree to be copied.
     * @return bst&.
     */
-        
+
     bst& operator=(const bst& b){
-        this->clear();
-        op=b.op;
-        if(b.root) root=std::make_unique<node_type>(*b.root);
+        if(this!=&b){
+            this->clear();
+            op=b.op;
+            if(b.root) root=std::make_unique<node_type>(*b.root);
+        }
         return *this;
     }
 
@@ -183,20 +185,20 @@ class bst{
     bst(bst&& b) noexcept: op{std::move(b.op)} {
         root.reset(b.root.release());
     }
-        
+
    /**
     * @brief Move assignment.
     * @tparam b rvalue reference to the tree to be moved.
     * @return bst&.
     */
-        
+
     //bst& operator=(bst&& b) noexcept=default;
     bst& operator=(bst&& b) noexcept{
         root.reset(b.root.release());
         op=std::move(b.op);
         return *this;
     }
-   
+
    /**
     * @brief This function empties out the tree, releasing the memory occupied by the nodes. root is set to nullptr.
     */
@@ -221,14 +223,14 @@ class bst{
     * @brief Overloaded function that returns an iterator pointing to one node after the rightmost one.
     * @return iterator pointing to one node after the rightmost one.
     */
-        
+
     iterator end() noexcept { return iterator{nullptr}; }
-    
+
    /**
     * @brief Overloaded function that returns a const iterator pointing to the leftmost node of the tree.
     * @return const iterator pointing to the leftmost node.
     */
-        
+
     const_iterator begin() const noexcept{
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
@@ -240,14 +242,14 @@ class bst{
     * @brief Overloaded function that returns a const iterator pointing to one node after the rightmost one.
     * @return const iterator pointing to one node after the rightmost one.
     */
-        
+
     const_iterator end() const noexcept { return const_iterator{nullptr}; }
 
    /**
     * @brief This function returns a const iterator pointing to the leftmost node of the tree.
     * @return const iterator pointing to the leftmost node.
     */
-        
+
     const_iterator cbegin() const noexcept {
         if(!root) return const_iterator{nullptr};
         node_type* temp=root.get();
@@ -259,7 +261,7 @@ class bst{
     * @brief This function returns a const iterator pointing to one node after the rightmost one.
     * @return const iterator pointing to one node after the rightmost one.
     */
-        
+
     const_iterator cend() const noexcept { return const_iterator{nullptr}; }
 
    /**
@@ -300,7 +302,7 @@ class bst{
     * @return iterator pointing to the node containing the key or to nullptr if the key is not found.
     */
 
-    iterator find(const key_type& x) noexcept{
+    iterator find(const key_type& x) {
         node_type* temp=root.get();
         while(temp){
             key_type key=temp->element.first;
@@ -324,7 +326,7 @@ class bst{
     * @return const iterator pointing to the node containing the key or to nullptr if the key is not found.
     */
 
-    const_iterator find(const key_type& x) const noexcept{
+    const_iterator find(const key_type& x) const{
         node_type* temp=root.get();
         while(temp!=nullptr){
             key_type key=temp->element.first;
@@ -338,7 +340,7 @@ class bst{
                 temp=temp->left.get();
             }
         }
-        return cend();
+        return end();
     }
 
    /**
@@ -402,10 +404,8 @@ class bst{
     */
 
     std::vector<std::pair<key_type,value_type>> vectorize() const {
-        auto dim=size();
         std::vector<std::pair<key_type,value_type>> v;
-        if(dim==0) return v;
-        v.reserve(dim);
+        v.reserve(size());
         for(auto i=begin(); i!=end(); ++i) {
             v.emplace_back(*i);
         }
@@ -417,7 +417,7 @@ class bst{
     * @brief This function balances the tree by calling vectorize, reorder, clear and _insert. At first, it stores the nodes of the tree in a vector calling vectorize; then, the
     * vector is reordered calling reorder. Finally, after calling clear to empty out the tree, the pairs are reinserted calling _insert.
     */
-        
+
     void balance() {
         #ifdef TEST
         if (!unbalanced()) return;
@@ -489,6 +489,7 @@ class bst{
     */
 
     bool unbalanced() const noexcept{
+        if(!root) return false;
         auto a=root.get()->unbalanced_node();
         if(a.first){
             std::cout<<"Unbalance on node "<<a.second->element.first<<std::endl;
