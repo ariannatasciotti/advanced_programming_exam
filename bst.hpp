@@ -137,7 +137,7 @@ class bst{
     * @tparam x object of type cmp_op.
     */
 
-    explicit bst(cmp_op x): op{x}{}
+    explicit bst(cmp_op x) noexcept: op{x}{}
 
    /**
     * @brief Constructs a new bst object.
@@ -303,20 +303,7 @@ class bst{
     */
 
     iterator find(const key_type& x) {
-        node_type* temp=root.get();
-        while(temp){
-            key_type key=temp->element.first;
-            if(!(op(key, x) || op(x, key))){
-                return iterator{temp};
-            }
-            else if(op(key, x)){
-                temp=temp->right.get();
-            }
-            else{
-                temp=temp->left.get();
-            }
-        }
-        return end();
+        return iterator{_find(x)};
     }
 
 
@@ -327,20 +314,7 @@ class bst{
     */
 
     const_iterator find(const key_type& x) const{
-        node_type* temp=root.get();
-        while(temp!=nullptr){
-            key_type key=temp->element.first;
-            if(!(op(key, x) || op(x, key))){
-                return const_iterator{temp};
-            }
-            else if(op(key, x)){
-                temp=temp->right.get();
-            }
-            else{
-                temp=temp->left.get();
-            }
-        }
-        return end();
+        return const_iterator{_find(x)};
     }
 
    /**
@@ -350,7 +324,7 @@ class bst{
     * @return std::ostream& output stream object.
     */
 
-    friend std::ostream& operator<<(std::ostream& os, const bst& x) {
+    friend std::ostream& operator<<(std::ostream& os, const bst& x) noexcept {
         for(const_iterator i=x.begin(); i!=x.end(); ++i) {
             os<<(*i).first<<" "<<(*i).second<<std::endl;
         }
