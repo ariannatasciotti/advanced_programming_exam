@@ -27,14 +27,14 @@ int main(){
     try{
         function_object<int> fun(1000000);
         bst<int,int,decltype(fun)> tree(fun); //building tree with fun as comparison operator
-        
+
         /* ALTERNATIVES TO CONSTRUCT A TREE
         bst<int,int, decltype(fun)> tree(71); //this works if function_object's constructor is not marked explicit
         bst<int,int, decltype(fun)> tree(fun); //otherwise you have to pass a functional_object
         bst<int,int> tree; //default constructor for tree (with std::less)
         bst<int,int, decltype(compare<int>)(*)> tree(compare<int>); //constructing with a pointer to function
         */
-        
+
         //TESTING OF EMPLACE AND INSERT
         tree.emplace(12,20);
         tree.insert({35,12});

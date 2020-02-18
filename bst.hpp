@@ -10,7 +10,9 @@
 #ifndef _bst_hpp
 #define _bst_hpp
 
-#include "node.hpp" //useless (included by iterator header), here for clarity
+#include <utility>
+#include <memory>
+#include "node.hpp" //already included by iterator header, here for clarity
 #include "iterator.hpp"
 #include <vector>
 
@@ -20,7 +22,7 @@
    * Given a vector, the function stores in another vector the median element of the previous vector and removes from the vector the median value. Then, it calls itself
    * recursively on right and left subvectors, until the size of the vector is equal to one.
    * @tparam v lvalue reference to std::vector<T> input vector.
-   * @tparam median lvalue reference to std::vector<T> empty vector in which the previous is reordered.
+   * @tparam median lvalue reference to std::vector<T> vector in which the previous is reordered.
    */
 
 template <typename T>
@@ -181,10 +183,7 @@ class bst{
     * @tparam b rvalue reference to the tree to be moved.
     */
 
-    //bst(bst&& b) noexcept=default;
-    bst(bst&& b) noexcept: op{std::move(b.op)} {
-        root.reset(b.root.release());
-    }
+    bst(bst&& b) noexcept: op{std::move(b.op)}, root{b.root.release()} {}
 
    /**
     * @brief Move assignment.
@@ -192,7 +191,6 @@ class bst{
     * @return bst&.
     */
 
-    //bst& operator=(bst&& b) noexcept=default;
     bst& operator=(bst&& b) noexcept{
         root.reset(b.root.release());
         op=std::move(b.op);
@@ -325,8 +323,8 @@ class bst{
     */
 
     friend std::ostream& operator<<(std::ostream& os, const bst& x) noexcept {
-        for(const_iterator i=x.begin(); i!=x.end(); ++i) {
-            os<<(*i).first<<" "<<(*i).second<<std::endl;
+        for(const auto& i: x) {
+            os<<i.first<<" "<<i.second<<std::endl;
         }
         return os;
     }
@@ -380,8 +378,8 @@ class bst{
     std::vector<std::pair<key_type,value_type>> vectorize() const {
         std::vector<std::pair<key_type,value_type>> v;
         v.reserve(size());
-        for(auto i=begin(); i!=end(); ++i) {
-            v.emplace_back(*i);
+        for(const auto& i: *this) {
+            v.emplace_back(i);
         }
         return v;
     }
@@ -400,7 +398,7 @@ class bst{
         std::vector<std::pair<key_type,value_type>> temp;
         reorder(v, temp);
         clear();
-        for(auto i : temp) _insert(i);
+        for(const auto& i : temp) _insert(i);
     }
 
    /**
