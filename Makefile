@@ -19,8 +19,8 @@ all: $(EXE)
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
 
-documentation: doxygen/doxy.in
-	doxygen $^
+documentation:
+	@cd doxygen; doxygen doxy.in
 
 .PHONY: documentation
 
