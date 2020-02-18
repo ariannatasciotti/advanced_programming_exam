@@ -3,11 +3,9 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++14 -DTEST
 EXE = $(SRC:.cpp=.x)
 
-# eliminate default suffixes
 .SUFFIXES:
 SUFFIXES =
 
-# just consider our own suffixes
 .SUFFIXES: .cpp .x
 
 
